@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机器学习入门 图文卡片 - YC</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Fraunces:ital,wght@1,400;1,700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="../assets/html2canvas.min.js" onerror="console.error('html2canvas failed to load')"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --denim: #3B6EA5; --denim-soft: #DCE7F2;
+  --wine: #B23A48; --wine-deep: #8E2C3A; --blush: #CB5A78;
+  --cream: #fefcf6; --cream-dark: #faf6eb;
+  --ink: #1A1A2E; --ink-light: #4A4A5A; --ink-faint: #8A8A9A;
+}
+body { background: #e8e4de; font-family: 'Noto Sans SC', sans-serif; color: var(--ink); padding: 40px 20px; }
+
+/* ===== 导出栏 ===== */
+.export-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: var(--ink); padding: 14px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+.export-bar button { background: var(--wine); color: #fff; border: none; padding: 10px 28px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans SC', sans-serif; }
+.export-bar button:hover { background: var(--wine-deep); }
+.export-bar .hint { color: #aaa; font-size: 13px; }
+
+/* ===== 卡片容器 ===== */
+.cards-container { display: flex; flex-direction: column; align-items: center; gap: 40px; margin-top: 80px; }
+.card { width: 1080px; height: 1440px; position: relative; overflow: hidden; transform: scale(0.45); transform-origin: top center; margin-bottom: -792px; border-radius: 4px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+
+.page-num { font-family: 'Fraunces', serif; font-style: italic; font-size: 130px; font-weight: 700; position: absolute; top: 36px; right: 70px; line-height: 1; }
+.serif { font-family: 'Noto Serif SC', serif; }
+
+/* ===== P1 封面 ===== */
+.p-cover {
+  background: var(--cream);
+  border: 28px solid var(--denim);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 90px 80px;
+  background-image: linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.p-cover .tag { font-size: 26px; font-weight: 700; color: #fff; background: var(--denim); display: inline-block; padding: 8px 26px; border-radius: 6px; margin-bottom: 44px; letter-spacing: 3px; align-self: flex-start; }
+.p-cover h1 { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: 102px; line-height: 1.22; color: var(--ink); margin-bottom: 30px; }
+.p-cover h1 .hl { background: var(--wine); color: #fff; padding: 4px 18px; border-radius: 8px; }
+.p-cover .subtitle { font-size: 40px; color: var(--ink-light); font-weight: 500; line-height: 1.5; margin-bottom: 60px; white-space: nowrap; }
+.p-cover .mini-graphic { display: flex; align-items: center; gap: 24px; margin-bottom: 70px; }
+.p-cover .author-row { display: flex; align-items: center; gap: 24px; margin-top: auto; }
+.p-cover .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--denim); }
+.p-cover .author-name { font-size: 44px; font-weight: 700; }
+.p-cover .author-desc { font-size: 30px; color: var(--ink-light); margin-top: 4px; }
+
+/* ===== 通用浅色页 ===== */
+.p-light { background: var(--cream); display: flex; flex-direction: column; padding: 90px 80px; }
+.p-light > .page-num { color: var(--wine); opacity: 0.12; }
+.p-light h2 { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: 60px; color: var(--ink); margin-bottom: 16px; }
+.p-light h2 .uline { background: linear-gradient(180deg, transparent 58%, rgba(59,110,165,0.35) 58%); }
+.p-light .sub { font-size: 34px; color: var(--ink-light); margin-bottom: 60px; }
+.p-light .body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+/* 问题→解法 对比行 */
+.vs-row { display: flex; flex-direction: column; gap: 36px; }
+.vs-block { border-radius: 22px; padding: 50px 56px; }
+.vs-block.q { background: rgba(178,58,72,0.08); border: 2px solid rgba(178,58,72,0.2); }
+.vs-block.a { background: var(--denim-soft); border: 2px solid rgba(59,110,165,0.25); }
+.vs-block .label { font-size: 28px; font-weight: 700; letter-spacing: 2px; margin-bottom: 18px; }
+.vs-block.q .label { color: var(--wine); }
+.vs-block.a .label { color: var(--denim); }
+.vs-block .t { font-family: 'Noto Serif SC', serif; font-size: 46px; font-weight: 700; margin-bottom: 14px; }
+.vs-block .d { font-size: 36px; color: var(--ink-light); line-height: 1.55; }
+.vs-arrow { text-align: center; font-size: 56px; color: var(--denim); }
+
+/* 图标+文字横排（grid） */
+.icon-list { display: flex; flex-direction: column; gap: 40px; }
+.icon-item { display: flex; align-items: flex-start; gap: 32px; }
+.icon-item .ico { font-size: 64px; flex-shrink: 0; width: 90px; text-align: center; }
+.icon-item .ic-body .t { font-family: 'Noto Serif SC', serif; font-size: 44px; font-weight: 700; margin-bottom: 8px; }
+.icon-item .ic-body .en { font-family: 'Fraunces', serif; font-style: italic; font-size: 30px; color: var(--ink-faint); margin-bottom: 10px; }
+.icon-item .ic-body .d { font-size: 34px; color: var(--ink-light); line-height: 1.5; }
+.icon-item .ic-body .ana { font-family: 'Noto Sans SC'; font-size: 32px; color: var(--wine); margin-top: 10px; font-weight: 500; }
+
+/* 身边的ML — 2列网格 */
+.use-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.use-cell { background: var(--cream-dark); border-radius: 20px; padding: 44px 40px; }
+.use-cell .ico { font-size: 56px; }
+.use-cell .t { font-family: 'Noto Serif SC', serif; font-size: 40px; font-weight: 700; margin: 16px 0 10px; }
+.use-cell .d { font-size: 30px; color: var(--ink-light); line-height: 1.45; }
+
+/* oversized 编号步骤 */
+.step-list { display: flex; flex-direction: column; gap: 44px; }
+.step-row { display: flex; align-items: flex-start; gap: 40px; }
+.step-row .n { font-family: 'Fraunces', serif; font-style: italic; font-weight: 700; font-size: 110px; line-height: 0.85; color: var(--denim); opacity: 0.28; flex-shrink: 0; width: 130px; }
+.step-row .st { font-family: 'Noto Serif SC', serif; font-size: 46px; font-weight: 700; margin-bottom: 8px; }
+.step-row .sd { font-size: 34px; color: var(--ink-light); line-height: 1.5; }
+
+/* ===== 深色页 ===== */
+.p-dark { background: var(--ink); display: flex; flex-direction: column; padding: 90px 80px; }
+.p-dark > .page-num { color: var(--denim); opacity: 0.18; }
+.p-dark h2 { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: 60px; color: var(--cream); margin-bottom: 16px; }
+.p-dark .sub { font-size: 34px; color: var(--denim); margin-bottom: 56px; font-weight: 500; }
+.p-dark .body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.p-dark .deco-line { position: absolute; bottom: 64px; left: 80px; right: 80px; height: 5px; background: linear-gradient(90deg, var(--wine) 50%, var(--denim) 75%, var(--blush) 100%); border-radius: 3px; opacity: 0.7; }
+.d-icon-list { display: flex; flex-direction: column; gap: 44px; }
+.d-icon-item { display: flex; align-items: flex-start; gap: 32px; }
+.d-icon-item .ico { font-size: 60px; flex-shrink: 0; width: 84px; text-align: center; }
+.d-icon-item .t { font-family: 'Noto Serif SC', serif; font-size: 44px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.d-icon-item .d { font-size: 34px; color: #c8ccd6; line-height: 1.5; }
+
+/* 深色页 误区 ✗→✓ */
+.myth-list { display: flex; flex-direction: column; gap: 40px; }
+.myth-card { background: rgba(255,255,255,0.04); border-radius: 20px; padding: 44px 48px; }
+.myth-card .wrong { font-size: 36px; color: #f0a8b4; font-weight: 500; margin-bottom: 16px; }
+.myth-card .wrong b { font-weight: 700; }
+.myth-card .right { font-size: 38px; color: #fff; line-height: 1.5; }
+.myth-card .right .badge { color: #8fb4e0; font-weight: 700; }
+
+/* 直觉类比页（statement + 图） */
+.p-statement { background: var(--cream-dark); display: flex; flex-direction: column; justify-content: center; padding: 90px 80px; }
+.p-statement .lab { font-size: 28px; letter-spacing: 4px; color: var(--ink-faint); text-transform: uppercase; margin-bottom: 36px; }
+.p-statement .big { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: 66px; line-height: 1.42; color: var(--ink); margin-bottom: 60px; }
+.p-statement .big .hl-w { color: var(--wine); }
+.p-statement .big .hl-b { color: var(--denim); }
+.p-statement .graphic-row { display: flex; align-items: center; gap: 40px; }
+.p-statement .graphic-row svg { width: 480px; height: auto; flex-shrink: 0; }
+.p-statement .graphic-row .cap { font-size: 32px; color: var(--ink-light); line-height: 1.5; }
+
+/* ===== 尾页 ===== */
+.p-end { background: var(--cream); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 90px; text-align: center; }
+.p-end .deco-bottom { position: absolute; bottom: 0; left: 0; right: 0; height: 10px; background: linear-gradient(90deg, var(--wine) 55%, var(--denim) 78%, var(--blush) 100%); }
+.p-end .quote-mark { font-family: 'Fraunces', serif; font-style: italic; font-size: 220px; color: var(--wine); opacity: 0.15; line-height: 0.55; margin-bottom: -10px; }
+.p-end .quote { font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: 64px; line-height: 1.5; color: var(--ink); margin-bottom: 50px; max-width: 880px; }
+.p-end .quote .hl { color: var(--wine); text-decoration: underline; text-decoration-color: var(--denim); text-underline-offset: 10px; text-decoration-thickness: 5px; }
+.p-end .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--denim); margin-bottom: 22px; }
+.p-end .author-name { font-size: 44px; font-weight: 700; margin-bottom: 10px; }
+.p-end .cta { font-size: 34px; color: var(--wine); font-weight: 600; margin-bottom: 44px; }
+.p-end .tagline { font-size: 28px; color: var(--ink-light); letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+<div class="export-bar">
+  <button onclick="exportAll()">📥 一键导出PNG</button>
+  <span class="hint">每张导出为 1080×1440 PNG，打包成 zip</span>
+</div>
+
+<div class="cards-container">
+
+<!-- ===== 01 封面 ===== -->
+<div class="card p-cover" data-card="1">
+  <span class="tag">机器学习入门</span>
+  <h1>机器学习，<br>其实<span class="hl">没那么玄</span></h1>
+  <p class="subtitle">不用一个公式，用大白话搞懂它</p>
+  <div class="mini-graphic">
+    <svg width="220" height="120" viewBox="0 0 220 120" fill="none">
+      <circle cx="20" cy="95" r="6" fill="#B23A48"/><circle cx="55" cy="80" r="6" fill="#B23A48"/>
+      <circle cx="90" cy="62" r="6" fill="#B23A48"/><circle cx="130" cy="55" r="6" fill="#B23A48"/>
+      <circle cx="165" cy="35" r="6" fill="#B23A48"/><circle cx="195" cy="22" r="6" fill="#B23A48"/>
+      <path d="M14 100 L205 18" stroke="#3B6EA5" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="author-row">
+    <img class="avatar" src="../assets/avatar.jpg" alt="avatar">
+    <div>
+      <div class="author-name">YC</div>
+      <div class="author-desc">认真生活，浪漫创作</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 02 什么是机器学习：问题→解法 ===== -->
+<div class="card p-light" data-card="2">
+  <span class="page-num">01</span>
+  <h2>什么是<span class="uline">机器学习</span>？</h2>
+  <p class="sub">一句话：不教它规则，给它看例子。</p>
+  <div class="body">
+    <div class="vs-row">
+      <div class="vs-block q">
+        <div class="label">传统编程</div>
+        <div class="t">人来定规则</div>
+        <div class="d">你得亲口告诉电脑「有胡须+尖耳朵=猫」，规则越多写得越崩溃。</div>
+      </div>
+      <div class="vs-arrow">↓</div>
+      <div class="vs-block a">
+        <div class="label">机器学习</div>
+        <div class="t">机器自己找规律</div>
+        <div class="d">给它看一万张猫的照片，它自己琢磨出「猫长什么样」，下次能认出新照片。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 03 三种学法：深色 图标横排 ===== -->
+<div class="card p-dark" data-card="3">
+  <span class="page-num">02</span>
+  <h2>机器学习的三种学法</h2>
+  <p class="sub">就像人学东西，方式不止一种</p>
+  <div class="body">
+    <div class="d-icon-list">
+      <div class="d-icon-item"><span class="ico">📒</span><div><div class="t">监督学习</div><div class="d">给数据也给标准答案，对照着练 —— 像做带答案的练习册。</div></div></div>
+      <div class="d-icon-item"><span class="ico">🧩</span><div><div class="t">无监督学习</div><div class="d">只给数据不给答案，自己找相似分组 —— 像把一桌乐高自动分堆。</div></div></div>
+      <div class="d-icon-item"><span class="ico">🐕</span><div><div class="t">强化学习</div><div class="d">试错+奖励，慢慢摸出最优解 —— 像用零食训练小狗。</div></div></div>
+    </div>
+  </div>
+  <div class="deco-line"></div>
+</div>
+
+<!-- ===== 04 直觉类比：statement + 图 ===== -->
+<div class="card p-statement" data-card="4">
+  <div class="lab">一句话直觉</div>
+  <div class="big">说穿了，机器学习就是在一堆<span class="hl-b">散落的点</span>里，找一条<span class="hl-w">最能描述规律的线</span>，再用它去猜没见过的点。</div>
+  <div class="graphic-row">
+    <svg viewBox="0 0 360 220" fill="none">
+      <line x1="20" y1="195" x2="340" y2="195" stroke="#cfc8bd" stroke-width="3"/>
+      <line x1="20" y1="195" x2="20" y2="20" stroke="#cfc8bd" stroke-width="3"/>
+      <circle cx="60" cy="170" r="7" fill="#B23A48"/><circle cx="105" cy="150" r="7" fill="#B23A48"/>
+      <circle cx="150" cy="125" r="7" fill="#B23A48"/><circle cx="195" cy="112" r="7" fill="#B23A48"/>
+      <circle cx="240" cy="82" r="7" fill="#B23A48"/><circle cx="285" cy="66" r="7" fill="#B23A48"/>
+      <path d="M50 178 L315 48" stroke="#3B6EA5" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="325" cy="42" r="9" fill="none" stroke="#8E2C3A" stroke-width="3" stroke-dasharray="4 4"/>
+    </svg>
+    <div class="cap">虚线圈那个点，就是机器在「预测」—— 它没见过，但顺着规律一猜就八九不离十。</div>
+  </div>
+</div>
+
+<!-- ===== 05 身边的ML：2列网格 ===== -->
+<div class="card p-light" data-card="5">
+  <span class="page-num">03</span>
+  <h2>它<span class="uline">早就在</span>你身边了</h2>
+  <p class="sub">你今天大概率已经用了好几次</p>
+  <div class="body">
+    <div class="use-grid">
+      <div class="use-cell"><div class="ico">📱</div><div class="t">推荐系统</div><div class="d">猜你想看、想买什么</div></div>
+      <div class="use-cell"><div class="ico">🔓</div><div class="t">人脸解锁</div><div class="d">判断「是不是本人」</div></div>
+      <div class="use-cell"><div class="ico">📧</div><div class="t">垃圾邮件过滤</div><div class="d">学会区分正常与广告</div></div>
+      <div class="use-cell"><div class="ico">🗺️</div><div class="t">导航预测路况</div><div class="d">算出此刻哪条路最快</div></div>
+      <div class="use-cell"><div class="ico">🎙️</div><div class="t">语音助手</div><div class="d">听懂你到底想干嘛</div></div>
+      <div class="use-cell"><div class="ico">💬</div><div class="t">ChatGPT 这类</div><div class="d">学语言规律再生成回答</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 06 误区：深色 ✗→✓ ===== -->
+<div class="card p-dark" data-card="6">
+  <span class="page-num">04</span>
+  <h2>三个最常见的误会</h2>
+  <p class="sub">搞懂这三点，少走很多弯路</p>
+  <div class="body">
+    <div class="myth-list">
+      <div class="myth-card"><div class="wrong">✗ 以为 <b>AI 会「思考」</b></div><div class="right"><span class="badge">✓ 其实</span> 它只是在算「最可能的答案」，并不真的懂。</div></div>
+      <div class="myth-card"><div class="wrong">✗ 以为 <b>数据越多越好</b></div><div class="right"><span class="badge">✓ 其实</span> 质量＞数量，垃圾进就垃圾出。</div></div>
+      <div class="myth-card"><div class="wrong">✗ 以为 <b>机器学习=深度学习</b></div><div class="right"><span class="badge">✓ 其实</span> 深度学习只是其中很能打的一种。</div></div>
+    </div>
+  </div>
+  <div class="deco-line"></div>
+</div>
+
+<!-- ===== 07 怎么开始：oversized 编号 ===== -->
+<div class="card p-light" data-card="7">
+  <span class="page-num">05</span>
+  <h2>想入门？<span class="uline">这样开始</span></h2>
+  <p class="sub">别一上来就啃数学，那是劝退最快的方式</p>
+  <div class="body">
+    <div class="step-list">
+      <div class="step-row"><div class="n">1</div><div><div class="st">补一点 Python 基础</div><div class="sd">能读懂、能改代码就行，它是机器学习的通用语言。</div></div></div>
+      <div class="step-row"><div class="n">2</div><div><div class="st">搞懂几个核心词</div><div class="sd">特征、标签、训练、过拟合 —— 比背公式有用得多。</div></div></div>
+      <div class="step-row"><div class="n">3</div><div><div class="st">跑通一个小项目</div><div class="sd">比如「鸢尾花分类」，亲手跑一次胜过看十篇教程。</div></div></div>
+      <div class="step-row"><div class="n">4</div><div><div class="st">需要时再补数学</div><div class="sd">带着问题去补线性代数和概率，效率最高。</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 08 尾页 金句 ===== -->
+<div class="card p-end" data-card="last">
+  <div class="quote-mark">"</div>
+  <p class="quote">机器学习不神秘，<br>它只是<span class="hl">从例子里找规律</span>。</p>
+  <img class="avatar" src="../assets/avatar.jpg" alt="avatar">
+  <p class="author-name">YC</p>
+  <p class="cta">关注 YC</p>
+  <p class="tagline">认真生活，浪漫创作 | AI 时代的个人 IP 实验</p>
+  <div class="deco-bottom"></div>
+</div>
+
+</div><!-- cards-container -->
+
+<script>
+async function exportAll() {
+  if (typeof html2canvas === 'undefined') { alert('⏳ html2canvas 正在加载，请稍等几秒后重试。'); return; }
+  if (typeof JSZip === 'undefined') { alert('JSZip 加载失败，请刷新重试。'); return; }
+  const cards = document.querySelectorAll('.card');
+  const btn = document.querySelector('.export-bar button');
+  btn.textContent = '⏳ 导出中... 0/' + cards.length;
+  btn.disabled = true;
+  const zip = new JSZip();
+  const folder = zip.folder('ml-cards-export');
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    card.style.transform = 'none'; card.style.marginBottom = '0'; card.style.borderRadius = '0'; card.style.boxShadow = 'none';
+    await new Promise(r => setTimeout(r, 150));
+    try {
+      const canvas = await html2canvas(card, { width: 1080, height: 1440, scale: 1, useCORS: true, allowTaint: true, backgroundColor: null, logging: false });
+      const base64 = canvas.toDataURL('image/png').split(',')[1];
+      folder.file(`card-${String(i + 1).padStart(2, '0')}.png`, base64, {base64: true});
+      btn.textContent = `⏳ 导出中... ${i + 1}/${cards.length}`;
+    } catch(e) { console.error('Export error on card ' + (i+1), e); }
+    finally { card.style.transform = 'scale(0.45)'; card.style.marginBottom = '-792px'; card.style.borderRadius = '4px'; card.style.boxShadow = '0 8px 40px rgba(0,0,0,0.12)'; }
+  }
+  btn.textContent = '⏳ 打包中...';
+  const blob = await zip.generateAsync({type: 'blob'});
+  const link = document.createElement('a');
+  link.download = 'ml-cards-export.zip';
+  link.href = URL.createObjectURL(blob);
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  URL.revokeObjectURL(link.href);
+  btn.textContent = '✅ 导出完成';
+  setTimeout(() => { btn.textContent = '📥 一键导出PNG'; btn.disabled = false; }, 2000);
+}
+</script>
+</body>
+</html>

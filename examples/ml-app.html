@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的学习看板 · YC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@700&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wine: #B23A48; --denim: #3B6EA5; --blush: #CB5A78;
+      --cream: #fefcf6; --ink: #1A1A2E; --ink-light: #4A4A5A; --ink-faint: #8A8A9A;
+      --card-bg: #fff; --border: rgba(26,26,26,.08); --green: #2d6a4f;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', sans-serif; font-size: 15px; line-height: 1.6; color: var(--ink); background: var(--cream); }
+    ::selection { background: #DCE7F2; color: var(--ink); }
+
+    /* ===== Header（贴纸用处①：小头像） ===== */
+    .app-header { position: sticky; top: 0; z-index: 100; height: 58px; background: var(--cream); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; }
+    .app-header .brand { display: flex; align-items: center; gap: 10px; }
+    .app-header .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 2px solid var(--denim); }
+    .app-header h1 { font-family: 'Noto Serif SC', serif; font-size: 1.1rem; font-weight: 700; }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; border: none; cursor: pointer; font-family: inherit; font-size: 0.85rem; font-weight: 600; border-radius: 8px; padding: 8px 16px; transition: all .2s; }
+    .btn-primary { background: var(--wine); color: #fff; }
+    .btn-primary:hover { background: #8E2C3A; }
+
+    /* ===== 统计条（信息密度） ===== */
+    .stat-bar { max-width: 1000px; margin: 0 auto; padding: 1.5rem 1.5rem 0; display: flex; gap: 1rem; flex-wrap: wrap; }
+    .stat { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.7rem 1.1rem; display: flex; align-items: baseline; gap: 0.5rem; }
+    .stat .n { font-family: 'Noto Serif SC', serif; font-size: 1.4rem; font-weight: 700; }
+    .stat:nth-child(1) .n { color: var(--denim); }
+    .stat:nth-child(2) .n { color: var(--wine); }
+    .stat:nth-child(3) .n { color: var(--green); }
+    .stat:nth-child(4) .n { color: var(--blush); }
+    .stat .l { font-size: 0.78rem; color: var(--ink-faint); }
+
+    /* ===== Tab ===== */
+    .tab-bar { display: flex; gap: 4px; overflow-x: auto; border-bottom: 2px solid #eee; padding: 0 1.5rem; max-width: 1000px; margin: 1.2rem auto 0; }
+    .tab { padding: 12px 18px; border: none; background: transparent; cursor: pointer; font-size: 0.9rem; color: var(--ink-light); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .2s; white-space: nowrap; font-family: inherit; }
+    .tab.active { border-bottom-color: var(--wine); color: var(--wine); font-weight: 600; }
+    .tab:hover:not(.active) { color: var(--ink); }
+    .tab .count { font-size: 0.72rem; background: var(--border); color: var(--ink-light); border-radius: 8px; padding: 1px 7px; margin-left: 5px; }
+
+    /* ===== 内容区 ===== */
+    .app-content { max-width: 1000px; margin: 0 auto; padding: 1.5rem; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .app-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.2rem; box-shadow: 0 2px 12px rgba(0,0,0,.04); transition: transform .2s, box-shadow .2s; cursor: pointer; }
+    .app-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    .app-card .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+    .card-badge { display: inline-block; padding: 2px 9px; border-radius: 8px; font-size: 0.7rem; font-weight: 600; }
+    .badge-basic { background: rgba(59,110,165,0.12); color: var(--denim); }
+    .badge-core { background: rgba(178,58,72,0.1); color: var(--wine); }
+    .badge-adv { background: rgba(203,90,120,0.12); color: var(--blush); }
+    .app-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .app-card p { font-size: 0.83rem; color: var(--ink-light); }
+    .app-card .meta { font-size: 0.74rem; color: var(--ink-faint); margin-top: 0.7rem; display: flex; align-items: center; gap: 6px; }
+    /* 进度条组件（非默认） */
+    .progress { margin-top: 0.8rem; }
+    .progress .track { height: 7px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .progress .fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--denim), var(--wine)); }
+    .progress .pct { font-size: 0.72rem; color: var(--ink-faint); margin-top: 4px; }
+
+    /* ===== 空状态（贴纸用处②） ===== */
+    .empty-state { display: none; flex-direction: column; align-items: center; text-align: center; padding: 3rem 1.5rem 4rem; }
+    .empty-state.active { display: flex; }
+    .empty-state img { width: 200px; height: auto; filter: drop-shadow(0 14px 26px rgba(26,26,46,0.12)); margin-bottom: 0.5rem; }
+    .empty-state h2 { font-family: 'Noto Serif SC', serif; font-size: 1.15rem; margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.9rem; color: var(--ink-light); max-width: 360px; }
+    .empty-state .note { font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--blush); margin-top: 0.8rem; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    @media (max-width: 600px) { .app-content { padding: 1rem; } .card-grid { grid-template-columns: 1fr; } .stat-bar { padding: 1rem 1rem 0; } }
+  </style>
+</head>
+<body>
+
+  <!-- ====== Header（贴纸用处①：YC 小头像） ====== -->
+  <header class="app-header">
+    <div class="brand">
+      <img class="avatar" src="../assets/avatar.jpg" alt="YC">
+      <h1>我的学习看板</h1>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="alert('（示例）打开新建面板')">＋ 新建</button>
+    </div>
+  </header>
+
+  <!-- ====== 统计条 ====== -->
+  <div class="stat-bar">
+    <div class="stat"><span class="n">4</span><span class="l">想学</span></div>
+    <div class="stat"><span class="n">3</span><span class="l">在学</span></div>
+    <div class="stat"><span class="n">0</span><span class="l">学完</span></div>
+    <div class="stat"><span class="n">5h</span><span class="l">本周投入</span></div>
+  </div>
+
+  <!-- ====== Tab ====== -->
+  <div class="tab-bar">
+    <button class="tab active" data-tab="want">想学 <span class="count">4</span></button>
+    <button class="tab" data-tab="doing">在学 <span class="count">3</span></button>
+    <button class="tab" data-tab="done">学完 <span class="count">0</span></button>
+  </div>
+
+  <main class="app-content">
+
+    <!-- Tab: 想学 -->
+    <div class="tab-content active" id="want">
+      <div class="card-grid">
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-basic">基础</span></div>
+          <h3>神经网络基础</h3>
+          <p>感知机、激活函数、前向传播到底在算什么。</p>
+          <div class="meta">⏱️ 预计 3h · 🔖 视频 + 笔记</div>
+        </div>
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-core">核心</span></div>
+          <h3>决策树 &amp; 随机森林</h3>
+          <p>最好理解的一类模型，先从它建立直觉。</p>
+          <div class="meta">⏱️ 预计 2h · 🔖 实战项目</div>
+        </div>
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-core">核心</span></div>
+          <h3>模型评估指标</h3>
+          <p>准确率、精确率、召回率，别再分不清。</p>
+          <div class="meta">⏱️ 预计 1.5h · 🔖 速查表</div>
+        </div>
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-adv">进阶</span></div>
+          <h3>强化学习入门</h3>
+          <p>试错 + 奖励，机器怎么自己摸出策略。</p>
+          <div class="meta">⏱️ 预计 4h · 🔖 课程</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 在学 -->
+    <div class="tab-content" id="doing">
+      <div class="card-grid">
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-basic">基础</span><span style="font-size:0.72rem;color:var(--ink-faint)">今天学过</span></div>
+          <h3>Python for ML</h3>
+          <p>NumPy、Pandas、画图，够用就行。</p>
+          <div class="progress"><div class="track"><div class="fill" style="width:80%"></div></div><div class="pct">80% · 还差最后一章</div></div>
+        </div>
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-core">核心</span></div>
+          <h3>监督学习</h3>
+          <p>带标签训练，对照答案改错。</p>
+          <div class="progress"><div class="track"><div class="fill" style="width:60%"></div></div><div class="pct">60% · 在看分类任务</div></div>
+        </div>
+        <div class="app-card">
+          <div class="top"><span class="card-badge badge-core">核心</span></div>
+          <h3>线性回归</h3>
+          <p>从一堆点里找一条线——最基础的拟合。</p>
+          <div class="progress"><div class="track"><div class="fill" style="width:40%"></div></div><div class="pct">40% · 刚跑通第一个例子</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 学完（空状态 → 贴纸用处②） -->
+    <div class="tab-content" id="done">
+      <div class="empty-state active">
+        <img src="../assets/stickers/yc-reading.png" alt="YC">
+        <h2>这里还空着～</h2>
+        <p>学完一个主题，就把它拖到「学完」。第一块拼图，从今晚开始？</p>
+        <div class="note">慢慢来，每个 ✓ 都算数 ♥</div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

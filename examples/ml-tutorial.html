@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机器学习，其实没那么玄 — YC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --wine: #B23A48;
+      --wine-deep: #8E2C3A;
+      --denim: #3B6EA5;
+      --denim-soft: #DCE7F2;
+      --blush: #CB5A78;
+      --cream: #fefcf6;
+      --cream-dark: #faf6eb;
+      --ink: #1A1A2E;
+      --ink-light: #4A4A5A;
+      --ink-faint: #8A8A9A;
+      --dark-panel: #151821;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--ink);
+      background: var(--cream);
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--denim-soft); color: #1a1a1a; }
+
+    .container { max-width: 1300px; margin: 0 auto; padding: 0 2rem; }
+
+    .label-caps {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 500;
+      color: var(--ink-faint);
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .kw {
+      background: rgba(178, 58, 72, 0.13);
+      padding: 0.05em 0.35em;
+      border-radius: 5px;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+    .kw-blue {
+      background: linear-gradient(180deg, transparent 55%, rgba(59,110,165,0.28) 55%);
+      padding: 0 0.1em;
+    }
+
+    /* ===== HERO：分栏 + 出血装饰 ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.05fr 0.75fr;
+      align-items: center;
+      gap: 48px;
+      padding: 7rem 2rem 4rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 7vw, 5.4rem);
+      line-height: 1.14;
+      letter-spacing: -0.01em;
+    }
+    .hero h1 .accent { color: var(--wine); }
+    .hero .en-sub {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+      color: var(--denim);
+      margin-top: 0.6rem;
+    }
+    .hero p {
+      font-size: 1.08rem;
+      color: var(--ink-light);
+      margin-top: 1.6rem;
+      max-width: 520px;
+    }
+    .hero .scroll-hint {
+      font-family: 'Caveat', cursive;
+      font-size: 1.5rem;
+      color: var(--blush);
+      margin-top: 2.4rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* hero visual：拟合点+回归线的简笔示意 */
+    .hero-visual {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      max-width: 420px;
+      justify-self: center;
+    }
+    .hero-visual .ring {
+      position: absolute;
+      inset: 0;
+      border: 2.5px dashed var(--denim);
+      border-radius: 50%;
+      opacity: 0.35;
+    }
+    .hero-visual .ring::before {
+      content: '';
+      position: absolute;
+      inset: 18px;
+      border: 1.5px solid rgba(178,58,72,0.18);
+      border-radius: 50%;
+    }
+    .hero-visual svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .float-pill {
+      position: absolute;
+      background: var(--cream);
+      padding: 0.5em 1em;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      box-shadow: 0 6px 24px rgba(26,26,46,0.1);
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      white-space: nowrap;
+    }
+    .float-pill.p1 { top: 6%; left: -6%; color: var(--wine); }
+    .float-pill.p2 { bottom: 10%; right: -10%; color: var(--denim); }
+
+    /* ===== 通用 section ===== */
+    .section { padding: clamp(80px, 12vh, 150px) 0; position: relative; }
+    .section--alt { background: var(--cream-dark); }
+    .section-number {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: var(--wine);
+      opacity: 0.35;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    .section-title {
+      font-family: 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      line-height: 1.25;
+    }
+    .lead { font-size: 1.12rem; color: var(--ink-light); max-width: 640px; margin-top: 1.2rem; }
+
+    .stripe-divider {
+      height: 22px;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(203,90,120,0.09) 3px, rgba(203,90,120,0.09) 4px);
+    }
+
+    /* ===== S1：sticky 大字侧栏 + 对比卡 ===== */
+    .s1-grid { display: grid; grid-template-columns: 0.45fr 1fr; gap: clamp(40px, 6vw, 90px); align-items: start; }
+    .s1-sticky { position: sticky; top: 12vh; }
+    .big-ghost {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: clamp(4rem, 11vw, 9rem);
+      line-height: 0.9;
+      color: var(--denim);
+      opacity: 0.16;
+      font-weight: 600;
+    }
+    .compare { display: grid; gap: 28px; }
+    .compare-card {
+      border-radius: 18px;
+      padding: clamp(28px, 3vw, 40px);
+      background: var(--cream);
+      border: 1.5px solid rgba(26,26,46,0.07);
+    }
+    .compare-card.is-old { border-left: 4px solid var(--ink-faint); }
+    .compare-card.is-ml { border-left: 4px solid var(--wine); background: var(--cream-dark); }
+    .compare-card .tag {
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+      font-weight: 700; color: var(--ink-faint); display: block; margin-bottom: 0.6rem;
+    }
+    .compare-card.is-ml .tag { color: var(--wine); }
+    .compare-card h3 { font-size: 1.3rem; font-family: 'Noto Serif SC', serif; margin-bottom: 0.6rem; }
+    .compare-card p { color: var(--ink-light); }
+    .compare-card code {
+      font-family: 'Fira Code', monospace; font-size: 0.85rem;
+      background: rgba(59,110,165,0.1); padding: 0.1em 0.4em; border-radius: 4px; color: var(--denim);
+    }
+
+    /* ===== S2：三类型卡片网格 ===== */
+    .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 2.5vw, 36px); margin-top: clamp(40px,6vw,70px); }
+    .type-card {
+      background: var(--cream);
+      border-radius: 20px;
+      padding: clamp(28px, 2.6vw, 40px);
+      border: 1.5px solid rgba(26,26,46,0.07);
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .type-card:hover { transform: translateY(-6px); box-shadow: 0 18px 48px rgba(26,26,46,0.1); }
+    .type-card .num {
+      font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+      font-size: 3.4rem; line-height: 1; opacity: 0.18;
+    }
+    .type-card:nth-child(1) .num { color: var(--wine); }
+    .type-card:nth-child(2) .num { color: var(--denim); }
+    .type-card:nth-child(3) .num { color: var(--blush); }
+    .type-card:nth-child(1) { border-top: 4px solid var(--wine); }
+    .type-card:nth-child(2) { border-top: 4px solid var(--denim); }
+    .type-card:nth-child(3) { border-top: 4px solid var(--blush); }
+    .type-card h3 { font-family: 'Noto Serif SC', serif; font-size: 1.4rem; margin: 0.4rem 0 0.2rem; }
+    .type-card .en { font-family: 'Fraunces', serif; font-style: italic; color: var(--ink-faint); font-size: 0.95rem; margin-bottom: 0.9rem; }
+    .type-card p { color: var(--ink-light); font-size: 0.98rem; }
+    .type-card .analogy {
+      margin-top: 1.1rem; padding-top: 1rem; border-top: 1px dashed rgba(26,26,46,0.15);
+      font-family: 'Caveat', cursive; font-size: 1.25rem; color: var(--ink);
+    }
+
+    /* ===== S3：深色面板（直觉类比） ===== */
+    .dark-panel { background: var(--dark-panel); color: #e2e8f0; }
+    .dark-panel .label-caps { color: rgba(255,255,255,0.5); }
+    .dark-panel .big-quote {
+      font-family: 'Noto Serif SC', serif; font-weight: 700;
+      font-size: clamp(1.8rem, 4.4vw, 3.1rem); line-height: 1.4; max-width: 980px;
+    }
+    .dark-panel .big-quote .hl { color: #f0a8b4; }
+    .dark-panel .big-quote .hl-b { color: #8fb4e0; }
+    .dark-panel .fitline {
+      margin-top: clamp(36px,5vw,60px); display: flex; gap: 36px; align-items: center; flex-wrap: wrap;
+    }
+    .dark-panel .fitline svg { width: min(420px, 90vw); height: auto; }
+    .dark-panel .fitline .cap { font-family: 'Caveat', cursive; font-size: 1.6rem; color: #8fb4e0; max-width: 280px; }
+
+    /* ===== S4：横向滚动「身边的ML」 ===== */
+    .scroll-row { display: flex; gap: 22px; overflow-x: auto; padding: 0.5rem 2rem 1.5rem; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+    .scroll-row::-webkit-scrollbar { height: 6px; }
+    .scroll-row::-webkit-scrollbar-thumb { background: rgba(59,110,165,0.3); border-radius: 3px; }
+    .use-card {
+      scroll-snap-align: start; flex: 0 0 260px;
+      background: var(--cream); border-radius: 16px; padding: 28px;
+      border-bottom: 4px solid var(--denim);
+    }
+    .use-card .ico { font-size: 2rem; }
+    .use-card h4 { font-family: 'Noto Serif SC', serif; font-size: 1.15rem; margin: 0.7rem 0 0.4rem; }
+    .use-card p { font-size: 0.9rem; color: var(--ink-light); }
+
+    /* ===== S5：误区 对称双栏 ===== */
+    .myth { display: grid; gap: 28px; margin-top: clamp(36px,5vw,56px); }
+    .myth-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch;
+      background: var(--cream); border-radius: 18px; overflow: hidden; border: 1.5px solid rgba(26,26,46,0.07);
+    }
+    .myth-row .wrong, .myth-row .right { padding: clamp(24px,2.6vw,36px); }
+    .myth-row .wrong { background: rgba(203,90,120,0.07); }
+    .myth-row .tag { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 0.6rem; }
+    .myth-row .wrong .tag { color: var(--blush); }
+    .myth-row .right .tag { color: var(--denim); }
+    .myth-row h4 { font-family: 'Noto Serif SC', serif; font-size: 1.2rem; margin-bottom: 0.5rem; }
+    .myth-row p { color: var(--ink-light); font-size: 0.98rem; }
+
+    /* ===== S6：step 引导 ===== */
+    .steps { display: grid; gap: 0; margin-top: clamp(36px,5vw,56px); }
+    .step {
+      display: grid; grid-template-columns: auto 1fr; gap: 28px;
+      padding-bottom: 40px; position: relative;
+    }
+    .step:not(:last-child)::before {
+      content: ''; position: absolute; left: 27px; top: 56px; bottom: 0;
+      border-left: 2px dashed rgba(59,110,165,0.4);
+    }
+    .step .circle {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--cream); border: 2.5px solid var(--wine);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif; font-style: italic; font-size: 1.5rem; color: var(--wine);
+      flex-shrink: 0; z-index: 1;
+    }
+    .step h4 { font-family: 'Noto Serif SC', serif; font-size: 1.25rem; margin-bottom: 0.3rem; }
+    .step p { color: var(--ink-light); }
+
+    /* ===== footer ===== */
+    footer { padding: clamp(50px, 8vh, 90px) 0; text-align: center; background: var(--cream-dark); }
+    footer .avatar { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--denim); }
+    footer .name { font-weight: 700; margin-top: 0.8rem; font-size: 1.1rem; }
+    footer .tagline { font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--wine); margin-top: 0.2rem; }
+    footer .meta { font-size: 0.8rem; color: var(--ink-faint); margin-top: 0.6rem; letter-spacing: 0.05em; }
+
+    /* ===== Reveal ===== */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: .1s; }
+    .reveal-d2 { transition-delay: .2s; }
+    .reveal-d3 { transition-delay: .3s; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+    /* ===== YC IP 贴纸装饰 ===== */
+    .yc-hero-img {
+      position: absolute; inset: 7% 3% auto; width: 94%; height: auto;
+      object-fit: contain; z-index: 1;
+      filter: drop-shadow(0 18px 30px rgba(26,26,46,0.16));
+    }
+    .yc-sticker { width: 100%; height: auto; display: block; filter: drop-shadow(0 14px 26px rgba(26,26,46,0.14)); }
+    .yc-note { font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--blush); line-height: 1.3; margin-top: 0.6rem; }
+    .s1-sticker-img { max-width: 220px; margin-top: 2.5rem; }
+    /* S4 身边的ML 标题行配贴纸 */
+    .s4-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+    .s4-head .yc-sticker { max-width: 170px; flex-shrink: 0; }
+    /* S6 怎么开始 两栏 + sticky 贴纸 */
+    .s6-grid { display: grid; grid-template-columns: 1fr 0.42fr; gap: clamp(30px, 5vw, 70px); align-items: start; }
+    .s6-aside { position: sticky; top: 16vh; text-align: center; }
+    .s6-aside .yc-sticker { max-width: 250px; margin: 0 auto; }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding: 5rem 1.5rem 3rem; }
+      .hero-visual { max-width: 300px; margin-top: 1rem; }
+      .s1-grid { grid-template-columns: 1fr; }
+      .s1-sticky { position: static; }
+      .s1-sticker-img { display: none; }
+      .type-grid { grid-template-columns: 1fr; }
+      .myth-row { grid-template-columns: 1fr; }
+      .s4-head { flex-direction: column; align-items: flex-start; }
+      .s4-head .yc-sticker { max-width: 130px; }
+      .s6-grid { grid-template-columns: 1fr; }
+      .s6-aside { position: static; margin-top: 1rem; }
+      .s6-aside .yc-sticker { max-width: 180px; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 15px; }
+      .container { padding: 0 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="label-caps">Machine Learning · 机器学习入门</span>
+      <h1>机器学习，<br>其实<span class="accent">没那么玄</span>。</h1>
+      <div class="en-sub">How machines actually "learn"</div>
+      <p>不用一个数学公式，全程用大白话和类比，带你搞懂：机器到底是怎么"学会"东西的，以及它早就藏在你生活的哪些角落。</p>
+      <div class="scroll-hint">往下滑，开始 ↓</div>
+    </div>
+    <div class="hero-visual">
+      <div class="ring"></div>
+      <img class="yc-hero-img" src="../assets/stickers/yc-thinking.png" alt="YC 思考机器学习">
+      <span class="float-pill p1">机器到底怎么"学会"的？</span>
+      <span class="float-pill p2">跟 YC 一起搞懂 ♥</span>
+    </div>
+  </section>
+
+  <div class="stripe-divider"></div>
+
+  <!-- ====== S1：什么是机器学习 ====== -->
+  <section class="section">
+    <div class="container">
+      <div class="s1-grid">
+        <div class="s1-sticky reveal">
+          <span class="section-number">01</span>
+          <div class="big-ghost">What<br>is ML?</div>
+          <img class="yc-sticker s1-sticker-img" src="../assets/stickers/yc-notebook.png" alt="YC 做笔记">
+        </div>
+        <div>
+          <h2 class="section-title reveal">不是给机器写规则，<br>而是给它<span class="kw">看例子</span></h2>
+          <p class="lead reveal reveal-d1">传统编程，是人把规则一条条写死；机器学习反过来——你只给它一堆例子，让它自己把规律找出来。</p>
+          <div class="compare reveal reveal-d2" style="margin-top: 2.5rem;">
+            <div class="compare-card is-old">
+              <span class="tag">传统编程</span>
+              <h3>人来定规则</h3>
+              <p>你得亲口告诉电脑：<code>if 有胡须 and 有尖耳朵 then 是猫</code>。规则越复杂，写得越崩溃，遇到例外就抓瞎。</p>
+            </div>
+            <div class="compare-card is-ml">
+              <span class="tag">机器学习</span>
+              <h3>机器自己总结规则</h3>
+              <p>你给它看<span class="kw-blue">一万张猫的照片</span>，告诉它"这些都是猫"，它自己琢磨出"猫长什么样"，下次见到新照片也能认出来。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== S2：三大类型 ====== -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-number">02</span>
+        <h2 class="section-title">机器学习的<span class="kw">三种学法</span></h2>
+        <p class="lead">就像人学东西的方式不止一种，机器也分这三大类。</p>
+      </div>
+      <div class="type-grid">
+        <div class="type-card reveal reveal-d1">
+          <div class="num">01</div>
+          <h3>监督学习</h3>
+          <div class="en">Supervised Learning</div>
+          <p>给数据，也给"标准答案"。机器对照答案练习，错了就改，直到能预测新题目。</p>
+          <div class="analogy">📒 像做带答案的练习册</div>
+        </div>
+        <div class="type-card reveal reveal-d2">
+          <div class="num">02</div>
+          <h3>无监督学习</h3>
+          <div class="en">Unsupervised Learning</div>
+          <p>只给数据，不给答案。机器自己在一堆数据里找相似、分组、发现隐藏的结构。</p>
+          <div class="analogy">🧩 像把一桌乐高自动分堆</div>
+        </div>
+        <div class="type-card reveal reveal-d3">
+          <div class="num">03</div>
+          <h3>强化学习</h3>
+          <div class="en">Reinforcement Learning</div>
+          <p>不停试错，做对了给奖励，做错了扣分。机器为了拿高分，慢慢摸索出最优策略。</p>
+          <div class="analogy">🐕 像用零食训练小狗</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== S3：深色面板 直觉类比 ====== -->
+  <section class="section dark-panel">
+    <div class="container">
+      <div class="reveal">
+        <span class="label-caps">一句话直觉</span>
+        <p class="big-quote">说穿了，大部分机器学习就是在一堆<span class="hl-b">散落的点</span>里，找一条<span class="hl">最能描述规律的线</span>——然后用这条线，去猜还没见过的点。</p>
+      </div>
+      <div class="fitline reveal reveal-d1">
+        <svg viewBox="0 0 320 200" fill="none">
+          <line x1="20" y1="180" x2="300" y2="180" stroke="#3a4256" stroke-width="2"/>
+          <line x1="20" y1="180" x2="20" y2="20" stroke="#3a4256" stroke-width="2"/>
+          <circle cx="55" cy="160" r="5" fill="#f0a8b4"/>
+          <circle cx="95" cy="145" r="5" fill="#f0a8b4"/>
+          <circle cx="130" cy="120" r="5" fill="#f0a8b4"/>
+          <circle cx="170" cy="110" r="5" fill="#f0a8b4"/>
+          <circle cx="210" cy="80" r="5" fill="#f0a8b4"/>
+          <circle cx="250" cy="65" r="5" fill="#f0a8b4"/>
+          <path d="M45 168 L275 50" stroke="#8fb4e0" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="285" cy="44" r="6" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="3 3"/>
+        </svg>
+        <span class="cap">虚线圈那个点，就是机器在「预测」——它没见过，但顺着规律一猜就八九不离十。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== S4：身边的ML 横向滚动 ====== -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal s4-head">
+        <div>
+          <span class="section-number">03</span>
+          <h2 class="section-title">它<span class="kw-blue">早就在</span>你身边了</h2>
+          <p class="lead">你今天大概率已经用了好几次机器学习，只是没意识到。<span style="font-family:'Caveat',cursive;font-size:1.2rem;color:var(--ink-faint)">（左右滑动看看 →）</span></p>
+        </div>
+        <img class="yc-sticker" src="../assets/stickers/yc-laptop.png" alt="YC 用电脑">
+      </div>
+    </div>
+    <div class="scroll-row reveal reveal-d1">
+      <div class="use-card"><div class="ico">📱</div><h4>刷视频/购物推荐</h4><p>根据你的行为，猜你接下来想看、想买什么。</p></div>
+      <div class="use-card"><div class="ico">🔓</div><h4>人脸 / 指纹解锁</h4><p>从你的脸里提取特征，判断"是不是本人"。</p></div>
+      <div class="use-card"><div class="ico">📧</div><h4>垃圾邮件过滤</h4><p>从海量邮件里学会区分"正常"和"广告诈骗"。</p></div>
+      <div class="use-card"><div class="ico">🗺️</div><h4>导航预测路况</h4><p>结合历史数据，预测哪条路此刻最快。</p></div>
+      <div class="use-card"><div class="ico">🎙️</div><h4>语音助手</h4><p>把声音转成文字，再理解你到底想干嘛。</p></div>
+      <div class="use-card"><div class="ico">💬</div><h4>ChatGPT 这类模型</h4><p>从海量文本里学会语言规律，再生成回答。</p></div>
+    </div>
+  </section>
+
+  <!-- ====== S5：常见误区 ====== -->
+  <section class="section section--alt">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-number">04</span>
+        <h2 class="section-title">三个最常见的<span class="kw">误会</span></h2>
+      </div>
+      <div class="myth">
+        <div class="myth-row reveal reveal-d1">
+          <div class="wrong"><span class="tag">❌ 你以为</span><h4>AI 在"思考"</h4><p>觉得它像人一样有意识、会推理、懂你说的话。</p></div>
+          <div class="right"><span class="tag">✓ 实际上</span><h4>它在算概率</h4><p>本质是根据见过的数据，算"最可能的答案是什么"，并不真的"懂"。</p></div>
+        </div>
+        <div class="myth-row reveal reveal-d2">
+          <div class="wrong"><span class="tag">❌ 你以为</span><h4>数据越多越好</h4><p>觉得喂的数据量大，模型就一定更聪明。</p></div>
+          <div class="right"><span class="tag">✓ 实际上</span><h4>质量 &gt; 数量</h4><p>脏数据、错标签只会把模型教坏。<span class="kw-blue">垃圾进，垃圾出。</span></p></div>
+        </div>
+        <div class="myth-row reveal reveal-d3">
+          <div class="wrong"><span class="tag">❌ 你以为</span><h4>机器学习 = 深度学习</h4><p>把两个词当成一回事，混着用。</p></div>
+          <div class="right"><span class="tag">✓ 实际上</span><h4>深度学习只是其中一种</h4><p>它是机器学习里很能打的一个分支，但不是全部，很多场景用更简单的方法就够了。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== S6：怎么开始 ====== -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-number">05</span>
+        <h2 class="section-title">想入门？<span class="kw">这样开始</span></h2>
+        <p class="lead">别一上来就啃数学，那是劝退的最快方式。按这个顺序，门槛低很多。</p>
+      </div>
+      <div class="s6-grid">
+        <div class="steps">
+          <div class="step reveal reveal-d1">
+            <div class="circle">1</div>
+            <div><h4>补一点 Python 基础</h4><p>不用学很深，能读懂、能改代码就行。它是机器学习事实上的通用语言。</p></div>
+          </div>
+          <div class="step reveal reveal-d1">
+            <div class="circle">2</div>
+            <div><h4>搞懂几个核心词</h4><p>特征、标签、训练、过拟合——理解这几个概念，比背公式有用得多。</p></div>
+          </div>
+          <div class="step reveal reveal-d2">
+            <div class="circle">3</div>
+            <div><h4>跑通一个小项目</h4><p>比如经典的"鸢尾花分类"。亲手让一个模型跑起来，比看十篇教程都管用。</p></div>
+          </div>
+          <div class="step reveal reveal-d2">
+            <div class="circle">4</div>
+            <div><h4>需要时再回头补数学</h4><p>遇到看不懂的地方，再针对性地补线性代数和概率。带着问题学，效率最高。</p></div>
+          </div>
+        </div>
+        <aside class="s6-aside reveal reveal-d2">
+          <img class="yc-sticker" src="../assets/stickers/yc-reading.png" alt="YC 边学边读">
+          <p class="yc-note">边学边做，<br>比死啃理论快多了 ♥</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer>
+    <div class="container">
+      <img class="avatar" src="../assets/avatar.jpg" alt="YC">
+      <div class="name">YC</div>
+      <div class="tagline">认真生活，浪漫创作</div>
+      <div class="meta">AI 时代的个人 IP 实验 · 机器学习入门</div>
+    </div>
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

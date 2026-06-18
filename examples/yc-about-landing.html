@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>你好，我是 YC — 认真生活，浪漫创作</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=Caveat:wght@400;700&family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS 变量（继承 brand-dna 三色） ===== */
+    :root {
+      --wine: #B23A48;        /* 酒红 · 头发 · signature · 主色 */
+      --wine-deep: #8E2C3A;
+      --denim: #3B6EA5;       /* 牛仔蓝 · 技术/系统 · 次色 */
+      --denim-soft: #DCE7F2;
+      --blush: #CB5A78;       /* 软粉 · 情感/生活 · 点缀 */
+      --cream: #fefcf6;
+      --cream-dark: #faf6eb;
+      --ink: #1A1A2E;
+      --ink-light: #4A4A5A;
+      --ink-faint: #8A8A9A;
+      --dark-panel: #151821;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--ink);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--denim-soft); color: var(--ink); }
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 2rem; }
+
+    .serif { font-family: 'Huiwen Mincho', 'Noto Serif SC', serif; }
+    .script { font-family: 'Caveat', cursive; }
+    .deco { font-family: 'Fraunces', serif; font-style: italic; }
+
+    a { color: inherit; }
+
+    /* 统一节奏：section 间距 */
+    section { position: relative; }
+    .pad { padding: clamp(80px, 12vh, 150px) 0; }
+
+    /* ===== HERO（布局1：双栏不对称 + 旋转环头像） ===== */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      align-items: center;
+      gap: clamp(32px, 5vw, 72px);
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 7rem 2rem 4rem;
+      position: relative;
+    }
+    .hero-bgword {
+      position: absolute;
+      top: 50%; right: -2vw;
+      transform: translateY(-50%);
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(8rem, 30vw, 26rem);
+      line-height: 0.8;
+      color: var(--wine);
+      opacity: 0.05;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+    .hero-left { position: relative; z-index: 2; }
+    .eyebrow {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      font-weight: 600;
+      color: var(--denim);
+      margin-bottom: 1.4rem;
+    }
+    .eyebrow span { color: var(--ink-faint); }
+    .hero h1 {
+      font-family: 'Huiwen Mincho', 'Noto Serif SC', serif;
+      font-weight: 900;
+      font-size: clamp(2.9rem, 6.4vw, 5.4rem);
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.6rem;
+    }
+    .hero h1 .name { color: var(--wine); position: relative; white-space: nowrap; }
+    .hero h1 .name::after {
+      content: '';
+      position: absolute; left: 0; right: 0; bottom: 0.08em;
+      height: 0.18em; background: var(--blush); opacity: 0.4; z-index: -1;
+      border-radius: 2px;
+    }
+    .hero-roles {
+      font-family: 'Fraunces', serif; font-style: italic;
+      font-size: clamp(1.1rem, 2.2vw, 1.7rem);
+      color: var(--ink-light);
+      margin-bottom: 1.6rem;
+    }
+    .hero-roles b { color: var(--denim); font-weight: 600; font-style: normal; }
+    .hero-intro {
+      font-size: 1.06rem; color: var(--ink-light);
+      max-width: 30em; margin-bottom: 2.2rem;
+    }
+    .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 30px; border-radius: 12px;
+      text-decoration: none; font-weight: 600; font-size: 0.98rem;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .btn-primary { background: var(--wine); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(178,58,72,0.28); }
+    .btn-ghost { color: var(--ink); border: 1.5px solid rgba(26,26,46,0.18); }
+    .btn-ghost:hover { border-color: var(--denim); color: var(--denim); }
+
+    /* Hero 右侧头像 */
+    .hero-right { position: relative; z-index: 2; display: flex; justify-content: center; }
+    .avatar-stage { position: relative; width: clamp(240px, 30vw, 360px); aspect-ratio: 1; }
+    .avatar-ring {
+      position: absolute; inset: -6%;
+      border: 2px dashed var(--denim);
+      border-radius: 50%; opacity: 0.5;
+      animation: spin 26s linear infinite;
+    }
+    .avatar-ring.inner {
+      inset: 4%; border: 3px solid var(--wine); border-style: solid;
+      opacity: 0.85; animation: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .avatar-img {
+      position: absolute; inset: 9%;
+      width: 82%; height: 82%;
+      border-radius: 50%; object-fit: cover;
+      background: #fff;
+      box-shadow: 0 18px 50px rgba(178,58,72,0.18);
+    }
+    .avatar-heart {
+      position: absolute; top: 2%; right: 4%;
+      font-size: clamp(1.6rem, 3vw, 2.4rem); color: var(--blush);
+      filter: drop-shadow(0 4px 8px rgba(203,90,120,0.3));
+    }
+    .avatar-note {
+      position: absolute; bottom: -6%; left: -8%;
+      font-family: 'Caveat', cursive; font-size: clamp(1.1rem, 2vw, 1.5rem);
+      color: var(--ink-light); transform: rotate(-6deg);
+    }
+    .avatar-note::before { content: '↗ '; color: var(--wine); }
+
+    /* ===== 关于我（布局2：左文右标签云，cream-alt 底） ===== */
+    .about { background: var(--cream-dark); }
+    .about-grid {
+      display: grid; grid-template-columns: 0.85fr 1.15fr;
+      gap: clamp(36px, 5vw, 80px); align-items: start;
+    }
+    .sec-num {
+      font-family: 'Fraunces', serif; font-style: italic;
+      font-size: clamp(1.3rem, 2.6vw, 1.9rem); color: var(--wine);
+      opacity: 0.4; display: block; margin-bottom: 0.3rem;
+    }
+    .sec-title {
+      font-family: 'Huiwen Mincho', 'Noto Serif SC', serif;
+      font-weight: 900; font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+      line-height: 1.2; margin-bottom: 1.4rem;
+    }
+    .about p { color: var(--ink-light); margin-bottom: 1.1rem; max-width: 34em; }
+    .about p .hl { color: var(--wine); font-weight: 700; }
+    .about p .hl-d { color: var(--denim); font-weight: 700; }
+    .tagcloud { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 0.4rem; }
+    .tag {
+      font-size: 0.95rem; font-weight: 500;
+      padding: 9px 18px; border-radius: 999px;
+      background: #fff; border: 1.5px solid rgba(26,26,46,0.08);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .tag b { font-weight: 700; }
+    .tag:nth-child(3n+1) b { color: var(--wine); }
+    .tag:nth-child(3n+2) b { color: var(--denim); }
+    .tag:nth-child(3n+3) b { color: var(--blush); }
+    .tag .en { color: var(--ink-faint); font-family: 'Fraunces', serif; font-style: italic; font-size: 0.86em; margin-left: 6px; }
+
+    /* ===== 五大内容支柱（布局3：编号卡片网格，白底） ===== */
+    .pillars-head { margin-bottom: clamp(36px, 5vw, 64px); max-width: 38em; }
+    .pillars-head .sub { color: var(--ink-light); margin-top: 0.6rem; }
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(16px, 1.8vw, 24px);
+    }
+    .pillar {
+      background: #fff; border-radius: 18px;
+      padding: clamp(26px, 3vw, 38px) clamp(24px, 2.6vw, 34px);
+      position: relative; overflow: hidden;
+      box-shadow: 0 4px 22px rgba(0,0,0,0.05);
+      transition: transform .25s, box-shadow .25s;
+    }
+    .pillar:hover { transform: translateY(-4px); box-shadow: 0 14px 36px rgba(0,0,0,0.09); }
+    .pillar::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    }
+    .pillar:nth-child(1)::before { background: var(--wine); }
+    .pillar:nth-child(2)::before { background: var(--denim); }
+    .pillar:nth-child(3)::before { background: var(--blush); }
+    .pillar:nth-child(4)::before { background: var(--wine); }
+    .pillar-bgnum {
+      position: absolute; top: 8px; right: 14px;
+      font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+      font-size: 5rem; line-height: 1; color: var(--ink); opacity: 0.06;
+    }
+    .pillar .emoji { font-size: 1.9rem; display: block; margin-bottom: 0.7rem; }
+    .pillar .en {
+      font-family: 'Fraunces', serif; font-style: italic;
+      color: var(--ink-faint); font-size: 0.92rem; display: block; margin-bottom: 0.2rem;
+    }
+    .pillar h3 {
+      font-family: 'Noto Serif SC', serif; font-weight: 900;
+      font-size: 1.32rem; margin-bottom: 0.7rem;
+    }
+    .pillar .kw { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pillar .kw span {
+      font-size: 0.78rem; color: var(--ink-light);
+      background: var(--cream-dark); padding: 4px 11px; border-radius: 6px;
+    }
+
+    /* ===== 价值观（布局4：深色面板 + 价值网格 + 金句） ===== */
+    .values { background: var(--dark-panel); color: #e2e8f0; }
+    .values .sec-num { color: var(--blush); opacity: 0.6; }
+    .values .sec-title { color: #fff; }
+    .values-head { text-align: center; margin-bottom: clamp(40px, 6vw, 64px); }
+    .values-head .en {
+      font-family: 'Fraunces', serif; font-style: italic;
+      color: var(--denim); font-size: 1rem; display: block; margin-top: 0.6rem;
+    }
+    .value-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      gap: clamp(14px, 1.6vw, 20px); max-width: 1040px; margin: 0 auto 3.4rem;
+    }
+    .value {
+      text-align: center; padding: 26px 16px;
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 14px;
+      background: rgba(255,255,255,0.02);
+    }
+    .value .num {
+      font-family: 'Fraunces', serif; font-style: italic;
+      color: var(--denim); font-size: 1rem; display: block; margin-bottom: 0.5rem; opacity: 0.7;
+    }
+    .value .zh { font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: 1.18rem; color: #fff; }
+    .value .en2 { display: block; font-size: 0.8rem; color: var(--ink-faint); margin-top: 0.2rem; letter-spacing: 0.04em; }
+    .values-quote {
+      font-family: 'Noto Serif SC', serif; font-weight: 700;
+      font-size: clamp(1.25rem, 2.6vw, 1.9rem); line-height: 1.8;
+      text-align: center; max-width: 720px; margin: 0 auto;
+    }
+    .values-quote em { color: var(--denim); font-style: normal; }
+
+    /* ===== Pull Quote（布局5：大引号引用，cream-alt 底） ===== */
+    .pq-wrap { background: var(--cream-dark); position: relative; overflow: hidden; }
+    .pq-bgword {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+      font-size: clamp(6rem, 19vw, 17rem); line-height: 0.8;
+      color: var(--wine); opacity: 0.05; white-space: nowrap;
+      pointer-events: none; user-select: none; z-index: 0;
+    }
+    .pq-wrap .container { position: relative; z-index: 2; }
+    .pullquote .heart-deco {
+      position: absolute; right: 26px; bottom: 22px;
+      font-size: 1.5rem; color: var(--blush); opacity: 0.5;
+    }
+    .pullquote {
+      position: relative; max-width: 780px; margin: 0 auto;
+      padding: clamp(36px, 5vw, 56px) clamp(28px, 4vw, 56px);
+      background: var(--cream); border-radius: 20px;
+      border: 2px solid var(--denim);
+    }
+    .pullquote::before {
+      content: '“'; font-family: 'Fraunces', serif;
+      font-size: 6rem; line-height: 1; color: var(--denim);
+      position: absolute; top: -8px; left: 22px; opacity: 0.45;
+    }
+    .pullquote p {
+      font-family: 'Noto Serif SC', serif; font-weight: 700;
+      font-size: clamp(1.2rem, 2.6vw, 1.7rem); line-height: 1.85;
+    }
+    .pullquote .en {
+      font-family: 'Fraunces', serif; font-style: italic;
+      color: var(--ink-faint); font-size: 1rem; margin-top: 1rem; display: block;
+    }
+    .pullquote .sig {
+      font-family: 'Caveat', cursive; font-size: 1.6rem;
+      color: var(--wine); display: block; margin-top: 0.8rem; text-align: right;
+    }
+
+    /* ===== CTA / 找到我（布局6：酒红收尾面板） ===== */
+    .cta {
+      background: var(--wine); color: #fff; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .cta-bgword {
+      position: absolute; left: 50%; bottom: -2.5vw; transform: translateX(-50%);
+      font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+      font-size: clamp(7rem, 22vw, 18rem); line-height: 0.8;
+      color: #fff; opacity: 0.08; white-space: nowrap;
+      pointer-events: none; user-select: none;
+    }
+    .cta-inner { position: relative; z-index: 2; }
+    .cta-avatar {
+      display: block; margin: 0 auto 1.5rem;
+      width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+      background: #fff; border: 3px solid rgba(255,255,255,0.55);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.22);
+    }
+    .cta h2 {
+      font-family: 'Huiwen Mincho', 'Noto Serif SC', serif; font-weight: 900;
+      color: #fff; font-size: clamp(1.9rem, 4.2vw, 3rem); margin-bottom: 0.8rem;
+    }
+    .cta h2 em { color: #fbe3e8; font-style: normal; }
+    .cta .lead { color: rgba(255,255,255,0.82); margin-bottom: 2.2rem; }
+    .platforms {
+      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+      margin: 0 auto 2.6rem; max-width: 640px;
+    }
+    .platforms span {
+      font-size: 0.9rem; font-weight: 500; color: #fff;
+      padding: 9px 20px; border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.07);
+      transition: background .2s, color .2s, transform .2s;
+    }
+    .platforms span:hover { background: #fff; color: var(--wine); transform: translateY(-2px); }
+    .btn-finale {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 16px 42px; border-radius: 12px;
+      background: #fff; color: var(--wine); font-weight: 700; font-size: 1rem;
+      text-decoration: none; transition: transform .2s, box-shadow .2s;
+    }
+    .btn-finale:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.25); }
+    .cta-note {
+      font-family: 'Caveat', cursive; font-size: 1.5rem;
+      color: rgba(255,255,255,0.9); margin-top: 1.8rem;
+    }
+    .cta-note::before { content: '♥ '; color: #fbe3e8; }
+
+    /* ===== 页脚（酒红深色收口） ===== */
+    footer {
+      background: var(--wine-deep); color: rgba(255,255,255,0.72);
+      padding: 30px 2rem; text-align: center; font-size: 0.86rem; line-height: 1.9;
+    }
+    footer .deco { font-family: 'Fraunces', serif; font-style: italic; color: #fff; opacity: 0.92; }
+
+    /* ===== Scroll Reveal ===== */
+    .reveal { opacity: 0; transform: translateY(30px);
+      transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-d1 { transition-delay: .08s; }
+    .reveal-d2 { transition-delay: .16s; }
+    .reveal-d3 { transition-delay: .24s; }
+    .reveal-d4 { transition-delay: .32s; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .avatar-ring { animation: none; }
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; text-align: left; padding-top: 6rem; }
+      .hero-right { order: -1; }
+      .about-grid { grid-template-columns: 1fr; }
+      .avatar-note { left: 0; }
+      .pillar-grid { grid-template-columns: repeat(2, 1fr); }
+      .value-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 15px; }
+      .hero-actions .btn { width: 100%; justify-content: center; }
+      .pillar-grid { grid-template-columns: 1fr; }
+      .value-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <span class="hero-bgword" aria-hidden="true">YC</span>
+    <div class="hero-left">
+      <p class="eyebrow">Personal IP <span>· Build · Share · Inspire</span></p>
+      <h1 class="serif">你好，<br>我是 <span class="name">YC</span></h1>
+      <p class="hero-roles deco">creator <b>·</b> engineer <b>·</b> dreamer</p>
+      <p class="hero-intro">一个在 AI 时代认真生活、浪漫创作的人。写代码、做设计、写音乐、读书、到处走走——把混乱的想法，变成有价值的东西。</p>
+      <div class="hero-actions">
+        <a href="#pillars" class="btn btn-primary">看我在创作什么 ↓</a>
+        <a href="#find" class="btn btn-ghost">找到我</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="avatar-stage">
+        <div class="avatar-ring"></div>
+        <div class="avatar-ring inner"></div>
+        <img class="avatar-img" src="../assets/avatar.jpg" alt="YC 头像 · 酒红乱发 + 透明圆框眼镜">
+        <span class="avatar-heart">♥</span>
+        <span class="avatar-note script">红发 + 眼镜，认准我</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 01 关于我 ====== -->
+  <section class="about pad" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="reveal">
+          <span class="sec-num">01</span>
+          <h2 class="sec-title serif">关于我</h2>
+          <p>我相信 <span class="hl">理性</span> 和 <span class="hl-d">浪漫</span> 可以共存——用 engineering mind 把事情做扎实，用 romantic vibes 把它做得有温度。</p>
+          <p>恋爱脑，但也很上进。认真对待每一段关系、每一个想法、每一行代码。</p>
+          <p>不追求完美，只追求一直在路上：<span class="hl">Progress &gt; Perfection.</span></p>
+        </div>
+        <div class="reveal reveal-d1">
+          <div class="tagcloud">
+            <span class="tag"><b>温暖友善</b><span class="en">warm</span></span>
+            <span class="tag"><b>创意无限</b><span class="en">creative</span></span>
+            <span class="tag"><b>温柔真诚</b><span class="en">gentle</span></span>
+            <span class="tag"><b>理性思考</b><span class="en">engineering</span></span>
+            <span class="tag"><b>热爱音乐</b><span class="en">music</span></span>
+            <span class="tag"><b>浪漫主义</b><span class="en">romantic</span></span>
+            <span class="tag"><b>梦想家</b><span class="en">dreamer</span></span>
+            <span class="tag"><b>持续成长</b><span class="en">always learning</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 02 五大内容支柱 ====== -->
+  <section class="pad" id="pillars">
+    <div class="container">
+      <div class="pillars-head reveal">
+        <span class="sec-num">02</span>
+        <h2 class="sec-title serif">我在创作什么</h2>
+        <p class="sub">四个方向，一个 YC。One IP, Many Possibilities.</p>
+      </div>
+      <div class="pillar-grid">
+        <div class="pillar reveal reveal-d1">
+          <span class="pillar-bgnum">1</span>
+          <span class="emoji">⌨️</span>
+          <span class="en">AI &amp; Coding</span>
+          <h3>构建与解决</h3>
+          <div class="kw"><span>AI Tools</span><span>Automation</span><span>No-code</span><span>Web Dev</span></div>
+        </div>
+        <div class="pillar reveal reveal-d2">
+          <span class="pillar-bgnum">2</span>
+          <span class="emoji">💡</span>
+          <span class="en">Design &amp; Ideas</span>
+          <h3>记录灵感，规划未来</h3>
+          <div class="kw"><span>Visual Design</span><span>Brand</span><span>Content</span></div>
+        </div>
+        <div class="pillar reveal reveal-d3">
+          <span class="pillar-bgnum">3</span>
+          <span class="emoji">📚</span>
+          <span class="en">Learning &amp; Books</span>
+          <h3>保持好奇，持续升级</h3>
+          <div class="kw"><span>Mindset</span><span>Business</span><span>Growth</span></div>
+        </div>
+        <div class="pillar reveal reveal-d4">
+          <span class="pillar-bgnum">4</span>
+          <span class="emoji">🌿</span>
+          <span class="en">Lifestyle &amp; Outdoor</span>
+          <h3>享受生活，保持热爱</h3>
+          <div class="kw"><span>City Walks</span><span>Nature</span><span>Slow Living</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 03 价值观（深色面板） ====== -->
+  <section class="values pad" id="values">
+    <div class="container">
+      <div class="values-head reveal">
+        <span class="sec-num">03</span>
+        <h2 class="sec-title serif">我看重什么</h2>
+        <span class="en">What I value</span>
+      </div>
+      <div class="value-grid">
+        <div class="value reveal reveal-d1"><span class="num">01</span><span class="zh">好奇心</span><span class="en2">Curiosity</span></div>
+        <div class="value reveal reveal-d2"><span class="num">02</span><span class="zh">创造力</span><span class="en2">Creativity</span></div>
+        <div class="value reveal reveal-d2"><span class="num">03</span><span class="zh">自律</span><span class="en2">Discipline</span></div>
+        <div class="value reveal reveal-d3"><span class="num">04</span><span class="zh">价值</span><span class="en2">Impact</span></div>
+        <div class="value reveal reveal-d3"><span class="num">05</span><span class="zh">成长</span><span class="en2">Growth</span></div>
+      </div>
+      <p class="values-quote reveal">「Ideas are easy. <em>Building</em> is where the magic happens.」</p>
+    </div>
+  </section>
+
+  <!-- ====== 04 Pull Quote ====== -->
+  <section class="pq-wrap pad">
+    <span class="pq-bgword" aria-hidden="true">create</span>
+    <div class="container">
+      <div class="pullquote reveal">
+        <p>把混乱的想法，变成<em style="color:var(--wine);font-style:normal;">有价值的产品</em>。<br>用音乐记录心情，用旋律表达爱。</p>
+        <span class="en">Keep creating. Keep shipping. Keep inspiring.</span>
+        <span class="sig">— YC</span>
+        <span class="heart-deco" aria-hidden="true">♥</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 05 CTA / 找到我 ====== -->
+  <section class="cta pad" id="find">
+    <span class="cta-bgword" aria-hidden="true">say hi</span>
+    <div class="container cta-inner">
+      <img class="cta-avatar reveal" src="../assets/avatar.jpg" alt="YC 头像 · 酒红乱发 + 透明圆框眼镜">
+      <h2 class="serif reveal">一起<em>创作</em>点什么吧</h2>
+      <p class="lead reveal reveal-d1">在这些地方，你能找到正在 build &amp; share 的我 ↓</p>
+      <div class="platforms reveal reveal-d2">
+        <span>小红书</span><span>B 站</span><span>YouTube</span><span>Instagram</span><span>Twitter / X</span><span>LinkedIn</span>
+      </div>
+      <a href="#" class="btn-finale reveal reveal-d3">说声你好 →</a>
+      <p class="cta-note reveal reveal-d4">期待和你相遇</p>
+    </div>
+  </section>
+
+  <footer>
+    <span class="deco">One IP, Many Possibilities. One YC.</span><br>
+    © 2026 YC · 认真生活，浪漫创作 · Live sincerely, create romantically. ♥
+  </footer>
+
+  <!-- ====== Scroll Reveal ====== -->
+  <script>
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

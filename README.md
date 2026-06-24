@@ -1,153 +1,114 @@
-# YC's Design Skill
+# YC Design
 
-一套给 AI 看的个人品牌设计系统。告诉 AI 用什么颜色、字体、布局、组件，以及什么绝对不能用。
+YC Design 是 YC 的个人品牌设计与前端交付系统。它把内容意图、品牌规则、场景方法、组件、YC-IP 图像和自动 QA 串成一条可执行工作流。
 
-等于把审美写成了操作手册，AI 每次帮我做页面时必须翻这本手册，不能自由发挥。
+它不是“按一个按钮生成同一种页面”。它的目标是：**在不同用途和视觉语气下仍然像 YC，同时不落入通用 AI 模板。**
 
----
+## 能做什么
 
-## 它能做什么
+| Scene | 目标 | 输出 |
+|---|---|---|
+| Tutorial | 让人感兴趣、理解概念 | 编辑型滚动长页 |
+| Teaching | 让零基础真正学会并能推理 | 贯穿案例、互动、测验、术语表 |
+| Landing | 建立期待并促成行动 | 活动/产品报名页 |
+| App | 快速操作、扫描状态 | 看板、书架、工具页 |
+| Cards | 移动端传播 | 1080x1440 多卡片与本地导出 |
 
-把一段文字/一篇文章/一个需求，变成风格统一、有品牌感的 HTML 页面。
+## 系统结构
 
-支持 4 种场景：
-- **教程/介绍页** — 信息清晰、步骤明确
-- **活动页/Landing** — 视觉冲击、有节奏感
-- **App型/功能型** — 功能优先、交互感
-- **小红书图文卡片** — 3:4比例、字大、手机可读、一键导出PNG
-
----
-
-## 核心逻辑
-
-```
-SKILL.md（流程 — AI按什么步骤干活）
-    ↓
-brand-dna.md + references/*（规范 — 能用什么不能用什么）
-    ↓
-assets/template-*.html（起点 — 从模板改，不从零写）
-```
-
-**限制AI的自由度 = 保证输出质量。**
-
-- AI 不能随便发明布局 → 只能从 15 种里选
-- AI 不能随便用颜色 → 只能用三色 + 扩展规则
-- AI 不能随便写样式 → 必须从组件库里选
-- AI 做完要自检 → 对照 checklist 逐条过，P0 不过就打回
-
----
-
-## 文件结构
-
-```
-yc-design/
-├── SKILL.md                    ← 7步工作流（大脑）
-├── brand-dna.md                ← 品牌基因：颜色/字体/气质/禁忌
-├── README.md                   ← 你在看的这个
-├── assets/                     ← 模板骨架（起点）
-│   ├── template-tutorial.html      教程页
-│   ├── template-landing.html       活动页/Landing
-│   ├── template-app.html           App型/功能型
-│   ├── template-cards.html         小红书图文卡片
-│   └── avatar.jpg                  IP头像
-└── references/                 ← 规则和零件（知识库）
-    ├── layouts.md                  15种布局模式（附完整代码）
-    ├── components.md               组件库（2988行）
-    ├── checklist.md                质量检查清单（P0/P1/P2）
-    ├── scene-tutorial.md           教程场景规范
-    ├── scene-landing.md            活动页场景规范
-    ├── scene-app.md                App型场景规范
-    └── scene-cards.md              小红书卡片场景规范
+```text
+SKILL.md                         工作流与路由
+brand-dna.md                     唯一品牌真源与规则优先级
+references/visual-modes.md       editorial / technical / quiet / conversion
+references/scene-*.md            五种场景方法
+references/components/catalog.json 组件元数据与准入状态
+references/components.md         legacy code cookbook（按需读取）
+assets/template-*.html           五个独立起手模板
+assets/ip-manifest.json          YC-IP 资产登记
+examples/*.html                  可运行成品
+scripts/qa-*                     静态与视觉 QA
 ```
 
----
+## 品牌核心
 
-## 7步工作流
+- 酒红 `#B23A48` / 深酒红 `#8E2C3A`：YC、主判断、主行动
+- 牛仔蓝 `#3B6EA5` / 深蓝 `#346294` / 浅蓝 `#9DBDE0`：技术、系统、连接，并保证浅底/深底可读
+- 软粉 `#CB5A78` / 深粉 `#9F3754`：情感与提醒；软粉只作点睛，可读文字用深粉
+- 暖奶白环境、墨色正文、衬线标题与无衬线正文
+- YC 角色固定为酒红乱发、透明圆框眼镜、chibi 比例
 
-AI 每次做设计必须按这个顺序走：
+颜色比例是语义权重，不是像素面积。页面也不需要同时出现虚线圆、Caveat、巨型标题和贴纸；每页只选 2-4 个签名元素。
 
-| 步骤 | 做什么 | 为什么 |
-|------|--------|--------|
-| 1 | 问 5 个问题（类型/受众/几屏/素材/约束） | 不自作主张 |
-| 2 | 读 brand-dna + 对应场景文件 | 先学规矩再动手 |
-| 3 | 从 assets/ 复制对应模板 | 从半成品开始，不从零写 |
-| 4 | 从 layouts.md 选 3-5 种布局 | 每个 section 不能一样 |
-| 5 | 从 components.md 选组件 | **禁止用 HTML 默认样式** |
-| 6 | 对照 checklist 自检 | P0 不过就打回 |
-| 7 | 交付 HTML 文件 | 浏览器打开就能看 |
+## 四种视觉语气
 
----
+- `editorial`：内容与观点，强调排版叙事
+- `technical`：功能与系统，强调密度、状态和反馈
+- `quiet`：作者与长文，强调留白和信任
+- `conversion`：活动与发布，强调节奏、证据和行动
 
-## 品牌基因
+同一品牌在不同任务里可以明显变化，但颜色语义、排版判断和 YC 人格保持一致。
 
-### 三色
+## 使用
 
-| 颜色 | 色值 | 比例 |
-|------|------|------|
-| 酒红 | `#B23A48` | 50% |
-| 牛仔蓝 | `#3B6EA5` | 35% |
-| 软粉 | `#CB5A78` | 15% |
+直接说：
 
-### 字体
+```text
+用 yc-design 把复利给零基础讲透，做成教学页。
+用 yc-design 做一个 AI 分享会的报名 Landing。
+把这篇文章转成 8 张 YC 小红书图文卡片。
+```
 
-| 用途 | 字体 |
-|------|------|
-| 中文标题 | 汇文明朝体（衬线，印刷感） |
-| 中文正文 | Noto Sans SC |
-| 英文装饰 | Fraunces italic |
-| 手写/注释 | Caveat |
-| 代码/终端 | Fira Code |
+信息足够时系统直接执行；只有关键缺口会导致做错时才提问。
 
-### 气质
+## 本地运行
 
-温暖友善 · 手绘暖调 · 理性×浪漫 · **不像AI** · 一看就是"YC 的"
+```bash
+cd YC_Design
+python3 -m http.server 8765
+```
 
-### 禁忌
+打开 `http://localhost:8765/examples/` 下的页面。
 
-蓝紫渐变 · glassmorphism · neon · bounce动画 · Inter/Roboto · 所有section居中 · HTML默认blockquote/列表/表格 · 看起来像AI生成的通用模板
+## QA
 
----
+```bash
+npm run qa:static
+npm run qa:visual
+npm run qa
+```
 
-## 组件库（2988行）
+视觉 QA 会在 320、768、1280 三个宽度生成截图，并检查控制台错误、横向溢出、图片、对比度和关键交互。低对比可见文本是硬错误，不是人工 warning。
 
-所有可用的"零件"，每个都是写好的 HTML+CSS 代码，AI 直接复制进去用：
+## 组件策略
 
-- 卡片 × 5种（杂志裁切 / 编号主导 / 标签主导 / 暗色 / 引用块风格）
-- 引用块 × 5种（极简竖线 / 大引号白底 / 手写badge / 牛仔蓝高亮 / 终端风格）
-- 代码面板 × 4种（暗色终端 / 亮色snippet / diff对比 / 多Tab）
-- 流程步骤条 · Do/Don't对比 · Pull Quote · 聊天气泡 · 导航栏 · 日历 · 书卡 · 机票/住宿卡 ……
+`references/components/catalog.json` 是组件真源，包含：
 
----
+- 适用 scene 与 visual mode
+- 信息密度
+- 是否交互
+- 移动端策略
+- 可访问性要求
+- `approved / experimental / deprecated` 状态
 
-## 质量检查
+`components.md` 保留完整代码片段，但不再允许 AI 从中随机挑选。先选 catalog，再读对应代码。
 
-做完逐条对照：
+## YC-IP 资产
 
-**P0（必须全过）：** 品牌三色比例 · 无禁忌元素 · 无HTML默认样式 · 暖底背景 · 衬线+无衬线混搭 · 响应式 · 每section布局不同 · clamp() fluid sizing · 截图发Twitter不会被说"又是AI做的"
+所有生成图必须进入 `assets/ip-manifest.json`，登记 slot、promptSummary、sourceImage、transparent、usedBy 和 status。主解释图按 yc-ip Sample / Standard 生成；轻贴纸仅在明确需要时使用。不同语义位置不复用同一张图。
 
-**P1（应过）：** 至少一个视觉惊喜section · 字号对比极端 · Scroll Reveal动效 · 大装饰数字/英文
+## Credits
 
-**P2（加分）：** 图片溢出容器 · 深色面板打破节奏 · 装饰元素克制 · prefers-reduced-motion
+YC Design 由 YC 持续维护。早期结构基于 Esther 不二的开源设计系统模板改造，并受归藏 PPT Design Skill 启发；当前品牌规则、视觉模式、教学系统、YC-IP 工作流和 QA 已形成 YC 自有标准。
 
----
+## 版权 · License
 
-## 怎么用（Fork指南）
+© 2026 Yi-Chen Lin（林羿辰 / **YC**）。**保留一切权利 / All Rights Reserved.**
 
-1. Fork 这个仓库
-2. 改 `brand-dna.md` — 换成你的颜色、字体、气质关键词
-3. 改 `assets/avatar.jpg` — 换成你的头像
-4. 组件库可以先不动，等你积累了自己的偏好再替换
-5. 把整个文件夹放到你的 AI 能读到的地方（Claude Code skills 目录 / Claude Project / 任何支持上下文的工具）
-6. 告诉 AI："做页面之前先读 SKILL.md"
+本仓库为 YC 的个人作品，**版权归 YC 所有**。源码与素材公开仅供浏览与参考，**未经书面许可，不得复制、修改、再分发或用于商业用途**。YC 的品牌规则、视觉模式与 YC-IP 资产为 YC 专有，**不在任何开源 / 共享授权范围内**（上文 Credits 中标注的第三方开源模板与灵感来源除外，其归属各自原作者）。
 
-核心不是这些文件本身，是**你的审美判断力**。文件只是把你的判断写成了 AI 能执行的规则。
-
----
-
-## 关于
-
-Made by YC — 在 AI 时代认真生活、浪漫创作的人
-
-基于 [Esther不二](https://github.com/esthersjw) 的开源设计系统模板改造（原 esther-design-system）。
-
-灵感来源：[归藏 op7418](https://github.com/op7418) 的 PPT Design Skill
+This is YC's personal work, public for viewing only — no copying, modifying,
+redistribution, or commercial use without written permission. YC's brand rules,
+visual modes, and YC-IP assets are proprietary and are **not** open-source or
+shared (third-party open-source templates and inspirations noted in *Credits*
+remain under their own licenses). See [LICENSE](LICENSE) · Contact:
+yichen.lin.2004@gmail.com
